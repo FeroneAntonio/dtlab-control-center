@@ -1,0 +1,6 @@
+pymodbus==2.5.3
+twisted[conch]==20.3.0
+bcrypt
+pygame==1.9.6
+pymunk==5.7.0
+Pillow==6.2.2

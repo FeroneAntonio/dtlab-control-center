@@ -13,3 +13,6 @@
 *.jpeg binary
 *.pdf binary
 *.zip binary
+
+# Preserve the company-provided BeerFactory snapshot byte-for-byte.
+lab/beerfactory-company/** -text

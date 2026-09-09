@@ -21,4 +21,11 @@ through the security-reporting channel configured on the GitHub repository.
 - The API has no built-in bearer token: `DTLAB_API_TOKENS` must be configured before
   authenticated routes can be used.
 
+## Authorized laboratory scenarios
+
+The files under `lab/beerfactory-company/` reproduce the company-provided OT lab
+bundle. Several original scripts intentionally run until interrupted. Use
+`tools/run_company_lab_scenario.py` for a bounded execution, and only target private
+systems that are owned by or explicitly authorized for the operator.
+
 If a real secret is ever committed, revoke or rotate it before rewriting Git history.

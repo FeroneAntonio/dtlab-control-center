@@ -1,5 +1,7 @@
 # DTLab OT Security Control Center
 
+[![CI](https://github.com/FeroneAntonio/dtlab-control-center/actions/workflows/ci.yml/badge.svg)](https://github.com/FeroneAntonio/dtlab-control-center/actions/workflows/ci.yml)
+
 DTLab Control Center è un cockpit operativo per laboratori OT/ICS. Riunisce in un
 solo prodotto inventario VMware, dati Cisco Cyber Vision, topologia, rischio,
 vulnerabilità, baseline, evidenze, rilevazioni endpoint e gestione completa dei
@@ -58,8 +60,9 @@ stato mostrato e ogni evidenza resta riconducibile ai byte originali.
   receiver reale.
 - **Evidence management**: snapshot JSON, manifest, hash, dossier asset/segnale e
   bundle ZIP riproducibili.
-- **Scenario BeerFactory**: dataset deterministico, Digital Twin Modbus, mapping
-  MITRE ATT&CK for ICS, IEC 62443, NIS2 e dimostrazioni isolate dal dato reale.
+- **Scenario BeerFactory**: simulatore e script di collaudo forniti dall'azienda,
+  dataset deterministico, Digital Twin Modbus, mapping MITRE ATT&CK for ICS,
+  IEC 62443, NIS2 e dimostrazioni isolate dal dato reale.
 - **Retention bounded**: gli snapshot raw vengono ricondotti a 100 dopo ogni ciclo
   di raccolta e da un timer di sicurezza indipendente.
 
@@ -101,6 +104,7 @@ L'endpoint audit integra Cyber Vision: non sostituisce DPI, SPAN o TAP.
 | `apps/api/` | API FastAPI con bearer token e RBAC |
 | `apps/web/` | Frontend Next.js alternativo |
 | `integrations/plc_endpoint_audit/` | Sensore endpoint PLC compatibile Python 2.7 |
+| `lab/beerfactory-company/` | Simulatore e otto script di collaudo aziendali, conservati integralmente |
 | `schemas/` | Contratti JSON v2/v3 ed eventi Host OT |
 | `config/` | Configurazioni di esempio e regole di detection |
 | `deploy/` | Systemd, bootstrap, staging, produzione e rollback |
@@ -178,6 +182,26 @@ Il deploy raccomandato usa una VM dedicata nella rete OT:
 ambiente reale leggere [Deployment](docs/DEPLOYMENT.md),
 [Runbook](docs/RUNBOOK.md) e [PLC Host Audit](docs/PLC-HOST-AUDIT.md).
 
+## Scenari di collaudo BeerFactory
+
+Il materiale fornito dall'azienda e già presente sulle VM è versionato integralmente
+in [`lab/beerfactory-company/`](lab/beerfactory-company/). Comprende il simulatore,
+lo sfondo grafico, il setup PLC, il launcher noVNC e gli otto script Modbus coperti
+dalle regole Cyber Vision.
+
+Gli script originali con loop continuo vanno eseguiti attraverso il launcher DTLab,
+che accetta soltanto indirizzi privati e applica un limite massimo di 60 secondi:
+
+```bash
+python tools/run_company_lab_scenario.py attack_shutdown \
+  --target <PLC_PRIVATE_IP> \
+  --duration 10 \
+  --authorized-lab
+```
+
+Consultare la [guida del bundle BeerFactory](lab/README.md) per inventario,
+provenienza, collaudo controllato e vincoli operativi.
+
 ## Sicurezza e segreti
 
 - Il repository non contiene token, password, chiavi private o snapshot reali.
@@ -218,6 +242,9 @@ e pull request.
 - [Runbook operativo](docs/RUNBOOK.md)
 - [Deployment e rollback](docs/DEPLOYMENT.md)
 - [Demo commissione](docs/COMMISSION-DEMO.md)
+- [Bundle e scenari BeerFactory](lab/README.md)
+- [Changelog](CHANGELOG.md)
+- [Contribuire](CONTRIBUTING.md)
 
 ## Stato del progetto
 
