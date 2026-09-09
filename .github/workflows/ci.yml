@@ -20,7 +20,7 @@ jobs:
       - run: python -m ruff check src tools tests apps/api
       # The production deployment gate is intentionally root-only on Linux.
       # GitHub-hosted Ubuntu runners provide passwordless sudo for this test.
-      - run: sudo --preserve-env=PATH python -m pytest
+      - run: sudo "$(command -v python)" -m pytest
       - run: python -m pytest apps/api/tests
 
   web:
