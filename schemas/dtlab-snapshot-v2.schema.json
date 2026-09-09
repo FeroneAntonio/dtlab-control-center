@@ -1,0 +1,1670 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://modbus.sitoclone.it/schema/dtlab-snapshot-v2.schema.json",
+  "title": "DTLab OT Security Snapshot",
+  "description": "Canonical, source-attributed snapshot consumed by the DTLab Control Center.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "generated_at",
+    "environment",
+    "sync",
+    "sources",
+    "virtual_machines",
+    "networks",
+    "assets",
+    "identity_links",
+    "risk_scores",
+    "activities",
+    "flows",
+    "events",
+    "vulnerabilities",
+    "baselines",
+    "baseline_differences",
+    "sensors",
+    "reports",
+    "findings",
+    "quality"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "generated_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "environment": {
+      "$ref": "#/$defs/environment"
+    },
+    "sync": {
+      "$ref": "#/$defs/sync"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "virtual_machines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/virtualMachine"
+      }
+    },
+    "networks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/network"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "identity_links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/identityLink"
+      }
+    },
+    "risk_scores": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/riskScore"
+      }
+    },
+    "activities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/activity"
+      }
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/flow"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    },
+    "vulnerabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/vulnerability"
+      }
+    },
+    "baselines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/baseline"
+      }
+    },
+    "baseline_differences": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/baselineDifference"
+      }
+    },
+    "sensors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sensor"
+      }
+    },
+    "reports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/report"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "quality": {
+      "$ref": "#/$defs/quality"
+    }
+  },
+  "$defs": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "nullableDateTime": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/dateTime"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableString": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "truthState": {
+      "type": "string",
+      "enum": [
+        "real",
+        "observed",
+        "expected",
+        "demo",
+        "unavailable",
+        "stale"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_record_id",
+        "truth",
+        "observed_at",
+        "fetched_at",
+        "completeness",
+        "notes"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_record_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "truth": {
+          "$ref": "#/$defs/truthState"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/nullableDateTime"
+        },
+        "fetched_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "completeness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "id",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        }
+      }
+    },
+    "environment": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "timezone",
+            "status",
+            "description"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "lab",
+                "production",
+                "training",
+                "unknown"
+              ]
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "operational",
+                "degraded",
+                "offline",
+                "unknown"
+              ]
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "sync": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "publication_mode",
+        "started_at",
+        "completed_at",
+        "max_age_seconds",
+        "collector_version",
+        "vpn_required",
+        "last_known_good_snapshot_id"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "fresh",
+            "partial",
+            "stale",
+            "offline",
+            "failed"
+          ]
+        },
+        "publication_mode": {
+          "type": "string",
+          "enum": [
+            "real_only",
+            "allow_demo"
+          ]
+        },
+        "started_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "completed_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "max_age_seconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 604800
+        },
+        "collector_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "vpn_required": {
+          "type": "boolean"
+        },
+        "last_known_good_snapshot_id": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    },
+    "source": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "label",
+            "type",
+            "endpoint_label",
+            "status",
+            "version",
+            "last_attempt_at",
+            "last_success_at",
+            "record_counts",
+            "capabilities",
+            "error"
+          ],
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "vmware_esxi",
+                "cisco_cyber_vision",
+                "cisco_cyber_vision_new_ui",
+                "operator",
+                "demo",
+                "siem",
+                "other"
+              ]
+            },
+            "endpoint_label": {
+              "type": "string",
+              "description": "Human-safe endpoint label. Never contains credentials or query tokens."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "connected",
+                "degraded",
+                "unavailable",
+                "not_configured",
+                "stale"
+              ]
+            },
+            "version": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "last_attempt_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "last_success_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "record_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "capabilities": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "status",
+                  "records",
+                  "error_code"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "records": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "error_code": {
+                    "$ref": "#/$defs/nullableString"
+                  },
+                  "attempted": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "successful": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "details": {
+              "type": "object"
+            },
+            "error": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "networkInterface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "network_id",
+        "mac_address",
+        "ip_addresses",
+        "connected",
+        "start_connected"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "network_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "mac_address": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "ip_addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "connected": {
+          "type": "boolean"
+        },
+        "start_connected": {
+          "type": "boolean"
+        }
+      }
+    },
+    "virtualMachine": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "hostname",
+            "operational_context",
+            "power_state",
+            "guest_os",
+            "cpu_count",
+            "memory_mb",
+            "disk_capacity_gb",
+            "tools_status",
+            "primary_ip",
+            "interfaces",
+            "snapshot_count"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "hostname": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "operational_context": {
+              "$ref": "#/$defs/operationalContext"
+            },
+            "power_state": {
+              "type": "string",
+              "enum": [
+                "powered_on",
+                "powered_off",
+                "suspended",
+                "unknown"
+              ]
+            },
+            "guest_os": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "cpu_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "memory_mb": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "disk_capacity_gb": {
+              "type": "number",
+              "minimum": 0
+            },
+            "tools_status": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "not_running",
+                "not_installed",
+                "unknown"
+              ]
+            },
+            "primary_ip": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "interfaces": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/networkInterface"
+              }
+            },
+            "snapshot_count": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "operationalContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "lifecycle_role",
+        "official_target",
+        "kpi_scope",
+        "desired_power_state",
+        "evidence"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "cyber_vision",
+            "plc",
+            "hmi",
+            "security_testing",
+            "infrastructure",
+            "unknown"
+          ]
+        },
+        "lifecycle_role": {
+          "type": "string",
+          "enum": [
+            "operational",
+            "legacy",
+            "support",
+            "test",
+            "unknown"
+          ]
+        },
+        "official_target": {
+          "type": "boolean"
+        },
+        "kpi_scope": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "support",
+            "excluded_legacy",
+            "excluded_test",
+            "unknown"
+          ]
+        },
+        "desired_power_state": {
+          "type": "string",
+          "enum": [
+            "running",
+            "stopped",
+            "unspecified"
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        }
+      }
+    },
+    "network": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "cidrs",
+            "description"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "ctf",
+                "ot",
+                "dpi",
+                "management",
+                "unknown"
+              ]
+            },
+            "cidrs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "asset": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "category",
+            "device_type",
+            "vendor",
+            "ip_addresses",
+            "mac_addresses",
+            "network_ids",
+            "zone",
+            "protocols",
+            "status",
+            "last_seen_at",
+            "operational_role"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "category": {
+              "type": "string"
+            },
+            "device_type": {
+              "type": "string"
+            },
+            "vendor": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "ip_addresses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "mac_addresses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "network_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "zone": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "protocols": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "online",
+                "offline",
+                "stale",
+                "unknown"
+              ]
+            },
+            "last_seen_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "operational_role": {
+              "type": "string",
+              "enum": [
+                "target",
+                "legacy",
+                "support",
+                "security_test",
+                "unknown"
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "identityLink": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "virtual_machine_id",
+            "asset_id",
+            "method",
+            "confidence",
+            "status"
+          ],
+          "properties": {
+            "virtual_machine_id": {
+              "type": "string"
+            },
+            "asset_id": {
+              "type": "string"
+            },
+            "method": {
+              "type": "string",
+              "enum": [
+                "operator_confirmed",
+                "ip_mac_match",
+                "ip_match",
+                "mac_match",
+                "name_match",
+                "unknown"
+              ]
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "confirmed",
+                "proposed",
+                "rejected"
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "riskFactor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "value",
+        "weight"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "value": {},
+        "weight": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "riskScore": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "asset_id",
+            "score",
+            "band",
+            "methodology",
+            "computed_at",
+            "factors"
+          ],
+          "properties": {
+            "asset_id": {
+              "type": "string"
+            },
+            "score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "band": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "methodology": {
+              "const": "cisco_cyber_vision"
+            },
+            "computed_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "factors": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/riskFactor"
+              }
+            },
+            "details": {
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "activity": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "asset_ids",
+            "type",
+            "protocol",
+            "first_seen_at",
+            "last_seen_at",
+            "packet_count",
+            "byte_count",
+            "flow_count",
+            "event_count",
+            "details"
+          ],
+          "properties": {
+            "asset_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "protocol": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "first_seen_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "last_seen_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "packet_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "byte_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "flow_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "event_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "details": {
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "flow": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "left_asset_id",
+            "right_asset_id",
+            "left_component_id",
+            "right_component_id",
+            "left_label",
+            "right_label",
+            "left_ip",
+            "right_ip",
+            "protocol",
+            "direction",
+            "direction_raw",
+            "left_port",
+            "right_port",
+            "first_seen_at",
+            "last_seen_at",
+            "packet_count",
+            "byte_count"
+          ],
+          "properties": {
+            "left_asset_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "right_asset_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "left_component_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "right_component_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "left_label": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "right_label": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "left_ip": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "right_ip": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "protocol": {
+              "type": "string"
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "left_to_right",
+                "right_to_left",
+                "undetermined",
+                "unknown"
+              ]
+            },
+            "direction_raw": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "left_port": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 65535
+            },
+            "right_port": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 65535
+            },
+            "first_seen_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "last_seen_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "packet_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "byte_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "event": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "occurred_at",
+            "severity",
+            "category",
+            "title",
+            "description",
+            "status",
+            "asset_ids",
+            "acknowledged"
+          ],
+          "properties": {
+            "occurred_at": {
+              "$ref": "#/$defs/dateTime"
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "critical",
+                "high",
+                "medium",
+                "low",
+                "info",
+                "unknown"
+              ]
+            },
+            "category": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "center_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "center_label": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "status": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "asset_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "acknowledged": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "vulnerability": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "asset_id",
+            "external_id",
+            "title",
+            "severity",
+            "cvss_score",
+            "status",
+            "published_at",
+            "details"
+          ],
+          "properties": {
+            "asset_id": {
+              "type": "string"
+            },
+            "external_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "title": {
+              "type": "string"
+            },
+            "severity": {
+              "type": "string"
+            },
+            "cvss_score": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 10
+            },
+            "status": {
+              "type": "string"
+            },
+            "published_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "details": {
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "baseline": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "description",
+            "status",
+            "created_at",
+            "creation_period_start",
+            "creation_period_end",
+            "last_scan_at",
+            "next_scan_at",
+            "difference_counts"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "status": {
+              "type": "string"
+            },
+            "created_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "creation_period_start": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "creation_period_end": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "last_scan_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "next_scan_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "difference_counts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "new_component",
+                "changed_component",
+                "new_activity",
+                "changed_activity"
+              ],
+              "properties": {
+                "new_component": {
+                  "type": ["integer", "null"],
+                  "minimum": 0
+                },
+                "changed_component": {
+                  "type": ["integer", "null"],
+                  "minimum": 0
+                },
+                "new_activity": {
+                  "type": ["integer", "null"],
+                  "minimum": 0
+                },
+                "changed_activity": {
+                  "type": ["integer", "null"],
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "baselineDifference": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "baseline_id",
+            "difference_type",
+            "target_id",
+            "key",
+            "value",
+            "asset_ids",
+            "flow_id",
+            "detected_at",
+            "description"
+          ],
+          "properties": {
+            "baseline_id": {
+              "type": "string"
+            },
+            "difference_type": {
+              "type": "string"
+            },
+            "target_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "key": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "value": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "asset_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "flow_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "detected_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "sensor": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "sensor_type",
+            "status",
+            "ip_addresses",
+            "last_seen_at",
+            "capture_mode",
+            "version",
+            "stats"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "sensor_type": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "ip_addresses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "last_seen_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "capture_mode": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "version": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "stats": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "window",
+                    "observed_at",
+                    "cpu_percent",
+                    "memory_percent",
+                    "disk_percent",
+                    "uptime_seconds",
+                    "packet_rate_pps",
+                    "packet_count",
+                    "drop_count",
+                    "snort_enabled",
+                    "discovery_enabled",
+                    "extension_access_valid"
+                  ],
+                  "properties": {
+                    "window": {
+                      "type": "string"
+                    },
+                    "observed_at": {
+                      "$ref": "#/$defs/nullableDateTime"
+                    },
+                    "cpu_percent": {
+                      "type": ["number", "null"],
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "memory_percent": {
+                      "type": ["number", "null"],
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "disk_percent": {
+                      "type": ["number", "null"],
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "uptime_seconds": {
+                      "type": ["integer", "null"],
+                      "minimum": 0
+                    },
+                    "packet_rate_pps": {
+                      "type": ["number", "null"],
+                      "minimum": 0
+                    },
+                    "packet_count": {
+                      "type": ["integer", "null"],
+                      "minimum": 0
+                    },
+                    "drop_count": {
+                      "type": ["integer", "null"],
+                      "minimum": 0
+                    },
+                    "snort_enabled": {
+                      "type": ["boolean", "null"]
+                    },
+                    "discovery_enabled": {
+                      "type": ["boolean", "null"]
+                    },
+                    "extension_access_valid": {
+                      "type": ["boolean", "null"]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "reportDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "name", "document_type"],
+      "properties": {
+        "document_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "document_type": {
+          "type": "string"
+        }
+      }
+    },
+    "report": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "description",
+            "report_type",
+            "output_types",
+            "schedule",
+            "created_at",
+            "updated_at",
+            "last_run_at",
+            "status",
+            "error",
+            "documents"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "report_type": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "output_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "schedule": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "created_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "updated_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "last_run_at": {
+              "$ref": "#/$defs/nullableDateTime"
+            },
+            "status": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "error": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "documents": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/reportDocument"
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "finding": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/record"
+        },
+        {
+          "type": "object",
+          "required": [
+            "code",
+            "severity",
+            "title",
+            "description",
+            "status",
+            "entity_ids",
+            "first_detected_at",
+            "last_detected_at",
+            "recommended_action",
+            "exclude_from_operational_kpis"
+          ],
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "critical",
+                "high",
+                "medium",
+                "low",
+                "info"
+              ]
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "acknowledged",
+                "resolved",
+                "accepted"
+              ]
+            },
+            "entity_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "first_detected_at": {
+              "$ref": "#/$defs/dateTime"
+            },
+            "last_detected_at": {
+              "$ref": "#/$defs/dateTime"
+            },
+            "recommended_action": {
+              "type": "string"
+            },
+            "exclude_from_operational_kpis": {
+              "type": "boolean"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "qualityCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "label",
+        "status",
+        "details"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "warn",
+            "fail",
+            "not_available"
+          ]
+        },
+        "details": {
+          "type": "string"
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "methodology",
+        "score",
+        "checks",
+        "coverage"
+      ],
+      "properties": {
+        "methodology": {
+          "const": "dtlab_data_quality_v2"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Dataset quality only. It is never a Cisco Cyber Vision risk score."
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/qualityCheck"
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    }
+  }
+}

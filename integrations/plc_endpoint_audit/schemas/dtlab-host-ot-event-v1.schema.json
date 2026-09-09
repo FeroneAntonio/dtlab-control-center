@@ -1,0 +1,539 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://modbus.sitoclone.it/schemas/dtlab-host-ot-event-v1.schema.json",
+  "title": "DTLab host OT endpoint event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_type",
+    "event_id",
+    "episode_id",
+    "revision",
+    "episode_sequence",
+    "boot_id",
+    "first_observed_at",
+    "last_observed_at",
+    "timestamp_basis",
+    "sensor",
+    "source",
+    "destination",
+    "modbus",
+    "outcome",
+    "detection",
+    "evidence",
+    "process"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "dtlab-host-ot-event-v1"
+    },
+    "event_type": {
+      "enum": [
+        "modbus_write",
+        "heartbeat"
+      ]
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^episode:dtlab-host-ot:[0-9a-f]{64}$"
+    },
+    "episode_id": {
+      "type": "string",
+      "pattern": "^episode:dtlab-host-ot:[0-9a-f]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "episode_sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "boot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "first_observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timestamp_basis": {
+      "const": "endpoint_utc"
+    },
+    "sensor": {
+      "$ref": "#/$defs/sensor"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "destination": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/destination"
+        }
+      ]
+    },
+    "modbus": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/modbus"
+        }
+      ]
+    },
+    "outcome": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/outcome"
+        }
+      ]
+    },
+    "detection": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/detection"
+        }
+      ]
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    },
+    "process": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/process"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "modbus_write"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "destination": {
+            "$ref": "#/$defs/destination"
+          },
+          "modbus": {
+            "$ref": "#/$defs/modbus"
+          },
+          "outcome": {
+            "$ref": "#/$defs/outcome"
+          },
+          "detection": {
+            "$ref": "#/$defs/detection"
+          },
+          "evidence": {
+            "properties": {
+              "truth": {
+                "enum": [
+                  "endpoint_request_observed",
+                  "endpoint_server_processed",
+                  "endpoint_server_rejected"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "destination": {
+            "type": "null"
+          },
+          "modbus": {
+            "type": "null"
+          },
+          "outcome": {
+            "type": "null"
+          },
+          "detection": {
+            "type": "null"
+          },
+          "evidence": {
+            "properties": {
+              "truth": {
+                "const": "endpoint_heartbeat"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sensor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "capture_kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "capture_kind": {
+          "enum": [
+            "server_hook",
+            "packet_capture",
+            "process_wrapper"
+          ]
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ip",
+        "port",
+        "classification"
+      ],
+      "properties": {
+        "ip": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "port": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "classification": {
+          "enum": [
+            "plc_self",
+            "authorized_hmi",
+            "security_test",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "ip",
+        "port",
+        "unit_id"
+      ],
+      "properties": {
+        "asset_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "ip": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "port": {
+          "const": 502
+        },
+        "unit_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
+    },
+    "write": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "function_code",
+        "address",
+        "quantity",
+        "values",
+        "values_sha256",
+        "values_truncated",
+        "count"
+      ],
+      "properties": {
+        "function_code": {
+          "enum": [
+            5,
+            6,
+            15,
+            16,
+            22,
+            23
+          ]
+        },
+        "address": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1968
+        },
+        "values": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535
+          }
+        },
+        "values_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "values_truncated": {
+          "type": "boolean"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "modbus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "function_codes",
+        "writes",
+        "request_count",
+        "dropped_operation_buckets"
+      ],
+      "properties": {
+        "operation": {
+          "const": "write"
+        },
+        "function_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              5,
+              6,
+              15,
+              16,
+              22,
+              23
+            ]
+          }
+        },
+        "writes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/$defs/write"
+          }
+        },
+        "request_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dropped_operation_buckets": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "states",
+        "last_state"
+      ],
+      "properties": {
+        "states": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "processed",
+            "rejected",
+            "unknown"
+          ],
+          "properties": {
+            "processed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rejected": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unknown": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "last_state": {
+          "enum": [
+            "processed",
+            "rejected",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "detection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "classification",
+        "severity",
+        "priority",
+        "policy_decision",
+        "reason"
+      ],
+      "properties": {
+        "rule_id": {
+          "enum": [
+            "DTLAB-MODBUS-WRITE-OBSERVED",
+            "DTLAB-MODBUS-SHUTDOWN-SEQUENCE"
+          ]
+        },
+        "classification": {
+          "enum": [
+            "modbus_write",
+            "process_shutdown_sequence"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "high",
+            "critical"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "p2",
+            "p1"
+          ]
+        },
+        "policy_decision": {
+          "const": "alert"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "truth",
+        "source_id",
+        "source_record_id",
+        "notes"
+      ],
+      "properties": {
+        "truth": {
+          "enum": [
+            "endpoint_request_observed",
+            "endpoint_server_processed",
+            "endpoint_server_rejected",
+            "endpoint_heartbeat"
+          ]
+        },
+        "source_id": {
+          "const": "src:dtlab-host-ot:plc-desktop"
+        },
+        "source_record_id": {
+          "type": "string",
+          "pattern": "^episode:dtlab-host-ot:[0-9a-f]{64}$"
+        },
+        "notes": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "maxLength": 2048
+          }
+        }
+      }
+    },
+    "process": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pid",
+        "executable",
+        "script"
+      ],
+      "properties": {
+        "pid": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "executable": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "script": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    }
+  }
+}

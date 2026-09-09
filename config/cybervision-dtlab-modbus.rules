@@ -1,0 +1,40 @@
+# BEGIN DTLAB MANAGED MODBUS RULES
+# DTLab BeerFactory - Cisco Cyber Vision / Snort alert-only rules
+# Scope: authorized laboratory PLC at 172.16.10.10:502.
+# Source inventory (silvatos/OTSecurityProject-PLC/scripts):
+#   attack_move_fill.py, attack_move_fill2.py, attack_shutdown.py,
+#   attack_shutdown2.py, attack_stop_fill.py, attack_stop_fill2.py,
+#   discovery.py and set_registry.py.
+#
+# Attribution rule: one Modbus packet cannot prove which Python filename generated
+# it, because several scripts share the same FC06 writes. Messages therefore say
+# "pattern compatible". Generic function-code signatures also cover new scripts.
+# Every rule is alert-only and never blocks or modifies PLC traffic.
+
+# BeerFactory register semantics and Silverio-script-compatible patterns (FC06).
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory register 1 value 0, pattern compatible with attack_move_fill2.py/attack_shutdown2.py/attack_stop_fill2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 01 00 00|",offset 7,depth 5; classtype:attempted-admin; sid:9001001; rev:2; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory register 2 value 0, pattern compatible with attack_move_fill2.py/attack_shutdown2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 02 00 00|",offset 7,depth 5; classtype:attempted-admin; sid:9001002; rev:2; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory register 2 value 1, pattern compatible with attack_stop_fill2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 02 00 01|",offset 7,depth 5; classtype:attempted-admin; sid:9001003; rev:2; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory motor start, pattern compatible with attack_move_fill.py/attack_move_fill2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 03 00 01|",offset 7,depth 5; classtype:attempted-admin; sid:9001004; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory motor stop, pattern compatible with attack_shutdown.py/attack_shutdown2.py/attack_stop_fill.py/attack_stop_fill2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 03 00 00|",offset 7,depth 5; classtype:attempted-dos; sid:9001005; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory nozzle open, pattern compatible with attack_move_fill.py/attack_move_fill2.py/attack_stop_fill.py/attack_stop_fill2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 04 00 01|",offset 7,depth 5; classtype:attempted-admin; sid:9001006; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory nozzle close, pattern compatible with attack_shutdown.py/attack_shutdown2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 04 00 00|",offset 7,depth 5; classtype:attempted-dos; sid:9001007; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory plant enable, pattern compatible with attack_move_fill.py/attack_move_fill2.py/attack_stop_fill.py/attack_stop_fill2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 10 00 01|",offset 7,depth 5; classtype:attempted-admin; sid:9001008; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - BeerFactory plant shutdown, pattern compatible with attack_shutdown.py/attack_shutdown2.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06 00 10 00 00|",offset 7,depth 5; classtype:attempted-dos; sid:9001009; rev:1; )
+
+# Silverio discovery.py: repeated FC03 reads become visible when sourced by Kali.
+alert tcp 172.16.10.30 any -> 172.16.10.10 502 ( msg: "DTLAB OT - Kali Modbus discovery/read holding registers (FC03), compatible with discovery.py"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|03|",offset 7,depth 1; classtype:network-scan; sid:9001010; rev:2; )
+
+# Source context: any Kali write is highlighted independently of the exact register.
+alert tcp 172.16.10.30 any -> 172.16.10.10 502 ( msg: "DTLAB OT - Kali unauthorized Modbus write to PLC"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06|",offset 7,depth 1; classtype:attempted-admin; sid:9001011; rev:1; )
+
+# Generic write-function coverage: set_registry.py and future/unknown scripts.
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Generic Modbus write single coil (FC05) to PLC"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|05|",offset 7,depth 1; classtype:attempted-admin; sid:9001020; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Generic Modbus write single register (FC06), covers set_registry.py and unknown scripts"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|06|",offset 7,depth 1; classtype:attempted-admin; sid:9001021; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Generic Modbus write multiple coils (FC15) to PLC"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|0f|",offset 7,depth 1; classtype:attempted-admin; sid:9001022; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Generic Modbus write multiple registers (FC16) to PLC"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|10|",offset 7,depth 1; classtype:attempted-admin; sid:9001023; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Generic Modbus write file record (FC21) to PLC"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|15|",offset 7,depth 1; classtype:attempted-admin; sid:9001024; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Generic Modbus mask write register (FC22) to PLC"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|16|",offset 7,depth 1; classtype:attempted-admin; sid:9001025; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Generic Modbus read/write multiple registers (FC23) to PLC"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|17|",offset 7,depth 1; classtype:attempted-admin; sid:9001026; rev:1; )
+alert tcp any any -> 172.16.10.10 502 ( msg: "DTLAB OT - Modbus diagnostics request (FC08) to PLC, verify subfunction"; flow:to_server,established; content:"|00 00|",offset 2,depth 2; content:"|08|",offset 7,depth 1; classtype:attempted-admin; sid:9001027; rev:1; )
+# END DTLAB MANAGED MODBUS RULES

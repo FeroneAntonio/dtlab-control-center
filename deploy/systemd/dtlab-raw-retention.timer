@@ -1,0 +1,12 @@
+[Unit]
+Description=Run DTLab raw snapshot retention every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+AccuracySec=5s
+Persistent=true
+Unit=dtlab-raw-retention.service
+
+[Install]
+WantedBy=timers.target

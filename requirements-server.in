@@ -1,0 +1,5 @@
+# Runtime UI only. Collector, VMware, credential and test dependencies stay off-server.
+streamlit==1.60.0
+pandas==2.3.3
+plotly==6.9.0
+jsonschema==4.26.0

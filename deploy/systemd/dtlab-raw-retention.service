@@ -1,0 +1,14 @@
+[Unit]
+Description=DTLab raw snapshot bounded retention
+After=dtlab-collector.service
+
+[Service]
+Type=oneshot
+User=websiteubuntu
+Group=websiteubuntu
+ExecStart=/opt/dtlab-control-center/venv-current/bin/python /opt/dtlab-control-center/current/tools/prune_raw_snapshots.py --root /var/lib/dtlab-control-center/raw --retain 100
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/dtlab-control-center/raw

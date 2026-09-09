@@ -1,0 +1,17 @@
+[server]
+headless = true
+address = "127.0.0.1"
+port = 8517
+fileWatcherType = "none"
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#087F6A"
+backgroundColor = "#F3F5F6"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#172126"
+font = "sans serif"

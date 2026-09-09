@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch DTLab production immutable snapshot manifests
+
+[Path]
+PathChanged=/var/www/clients/client1/web75/private/modbus-dashboard-data/manifests
+Unit=modbus-dashboard-ticket-ingest.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,28 @@
+[Unit]
+Description=DTLab PLC endpoint audit sender
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+Environment=PYTHONPATH=/opt/dtlab-plc-endpoint-audit
+ExecStart=/usr/bin/python3 -m dtlab_plc_audit.sender --config /etc/dtlab/plc-endpoint-audit.json --loop
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+ReadOnlyPaths=/etc/dtlab /opt/dtlab-plc-endpoint-audit
+ReadWritePaths=/var/lib/dtlab-plc-audit
+
+[Install]
+WantedBy=multi-user.target
+

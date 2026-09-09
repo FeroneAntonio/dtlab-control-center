@@ -1,0 +1,574 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://modbus.sitoclone.it/schema/dtlab-snapshot-v3.schema.json",
+  "title": "DTLab OT Security Snapshot v3",
+  "description": "Additive superset of the v2 snapshot. Reuses every v2 entity definition and adds the offensive, digital-twin, compliance, and history domains. New collections are optional so a v3 snapshot never invalidates the v2 data plane.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "generated_at",
+    "environment",
+    "sync",
+    "sources",
+    "virtual_machines",
+    "networks",
+    "assets",
+    "identity_links",
+    "risk_scores",
+    "activities",
+    "flows",
+    "events",
+    "vulnerabilities",
+    "baselines",
+    "baseline_differences",
+    "sensors",
+    "reports",
+    "findings",
+    "quality"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "3.0.0"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "generated_at": {
+      "$ref": "dtlab-snapshot-v2.schema.json#/$defs/dateTime"
+    },
+    "environment": {
+      "$ref": "dtlab-snapshot-v2.schema.json#/$defs/environment"
+    },
+    "sync": {
+      "$ref": "dtlab-snapshot-v2.schema.json#/$defs/sync"
+    },
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/source" }
+    },
+    "virtual_machines": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/virtualMachine" }
+    },
+    "networks": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/network" }
+    },
+    "assets": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/asset" }
+    },
+    "identity_links": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/identityLink" }
+    },
+    "risk_scores": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/riskScore" }
+    },
+    "activities": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/activity" }
+    },
+    "flows": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/flow" }
+    },
+    "events": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/event" }
+    },
+    "vulnerabilities": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/vulnerability" }
+    },
+    "baselines": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/baseline" }
+    },
+    "baseline_differences": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/baselineDifference" }
+    },
+    "sensors": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/sensor" }
+    },
+    "reports": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/report" }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/finding" }
+    },
+    "quality": {
+      "$ref": "dtlab-snapshot-v2.schema.json#/$defs/quality"
+    },
+
+    "attack_scenarios": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/attackScenario" }
+    },
+    "attack_runs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/attackRun" }
+    },
+    "detection_correlations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/detectionCorrelation" }
+    },
+    "process_telemetry": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/processTelemetrySample" }
+    },
+    "security_zones": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/securityZone" }
+    },
+    "compliance_mappings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/complianceMapping" }
+    },
+    "history": {
+      "$ref": "#/$defs/history"
+    }
+  },
+  "$defs": {
+    "executionMode": {
+      "type": "string",
+      "enum": ["simulated", "sandbox", "real"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "info", "unknown"]
+    },
+    "mitreTechnique": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["technique_id", "technique_name", "tactic"],
+      "properties": {
+        "technique_id": {
+          "type": "string",
+          "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$",
+          "description": "MITRE ATT&CK for ICS technique id, e.g. T0836 or T0836.001."
+        },
+        "technique_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tactic": {
+          "type": "string",
+          "minLength": 1,
+          "description": "ATT&CK for ICS tactic, e.g. 'Initial Access', 'Impair Process Control'."
+        }
+      }
+    },
+    "attackScenario": {
+      "allOf": [
+        { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/record" },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "description",
+            "category",
+            "severity",
+            "execution_mode",
+            "target_asset_role",
+            "mitre_techniques",
+            "expected_signals",
+            "roe_reference"
+          ],
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "description": { "type": "string" },
+            "category": {
+              "type": "string",
+              "enum": [
+                "discovery",
+                "unauthorized_write",
+                "anomalous_frequency",
+                "mitm_spoofing",
+                "denial_of_service",
+                "other"
+              ]
+            },
+            "severity": { "$ref": "#/$defs/severity" },
+            "execution_mode": { "$ref": "#/$defs/executionMode" },
+            "target_asset_role": {
+              "type": "string",
+              "enum": ["plc", "hmi", "sensor", "network", "any", "unknown"]
+            },
+            "mitre_techniques": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/mitreTechnique" }
+            },
+            "expected_signals": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Human-readable detections the scenario should trigger (e.g. 'Cyber Vision unauthorized write event')."
+            },
+            "roe_reference": {
+              "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString",
+              "description": "Signed Rules of Engagement document id. Must be non-null when execution_mode is 'real'."
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "attackStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step_id", "description", "outcome"],
+      "properties": {
+        "step_id": { "type": "string", "minLength": 1 },
+        "technique_id": {
+          "type": "string",
+          "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"
+        },
+        "description": { "type": "string" },
+        "started_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableDateTime" },
+        "completed_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableDateTime" },
+        "outcome": {
+          "type": "string",
+          "enum": ["success", "partial", "blocked", "error", "pending"]
+        }
+      }
+    },
+    "attackRun": {
+      "allOf": [
+        { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/record" },
+        {
+          "type": "object",
+          "required": [
+            "scenario_id",
+            "status",
+            "execution_mode",
+            "started_at",
+            "completed_at",
+            "source_asset_id",
+            "target_asset_ids",
+            "outcome",
+            "steps",
+            "roe_reference"
+          ],
+          "properties": {
+            "scenario_id": { "type": "string", "minLength": 1 },
+            "status": {
+              "type": "string",
+              "enum": ["planned", "running", "completed", "failed", "aborted"]
+            },
+            "execution_mode": { "$ref": "#/$defs/executionMode" },
+            "started_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableDateTime" },
+            "completed_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableDateTime" },
+            "source_asset_id": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString" },
+            "target_asset_ids": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "outcome": {
+              "type": "string",
+              "enum": ["success", "partial", "blocked", "error", "pending"]
+            },
+            "steps": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/attackStep" }
+            },
+            "roe_reference": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "detectionCorrelation": {
+      "allOf": [
+        { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/record" },
+        {
+          "type": "object",
+          "required": [
+            "attack_run_id",
+            "event_id",
+            "detected",
+            "detection_source",
+            "attack_at",
+            "detected_at",
+            "detection_latency_seconds",
+            "mitre_technique_id",
+            "notes"
+          ],
+          "properties": {
+            "attack_run_id": { "type": "string", "minLength": 1 },
+            "event_id": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString" },
+            "detected": { "type": "boolean" },
+            "detection_source": {
+              "type": "string",
+              "enum": [
+                "cisco_cyber_vision",
+                "cisco_cyber_vision_new_ui",
+                "siem",
+                "manual",
+                "none"
+              ]
+            },
+            "attack_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/dateTime" },
+            "detected_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableDateTime" },
+            "detection_latency_seconds": {
+              "type": ["integer", "null"],
+              "minimum": 0,
+              "description": "Wall-clock seconds between attack_at and detected_at. Null when detected is false."
+            },
+            "mitre_technique_id": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "string", "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$" }
+              ]
+            },
+            "notes": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "modbusRegister": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["address", "name", "kind", "value"],
+      "properties": {
+        "address": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "name": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": ["holding_register", "input_register", "coil", "discrete_input"]
+        },
+        "value": { "type": ["number", "boolean", "null"] },
+        "unit": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString" },
+        "expected_min": { "type": ["number", "null"] },
+        "expected_max": { "type": ["number", "null"] },
+        "in_bounds": { "type": ["boolean", "null"] }
+      }
+    },
+    "setpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "value"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "value": { "type": ["number", "boolean", "null"] },
+        "unit": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString" }
+      }
+    },
+    "processTelemetrySample": {
+      "allOf": [
+        { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/record" },
+        {
+          "type": "object",
+          "required": [
+            "asset_id",
+            "process",
+            "captured_at",
+            "sample_index",
+            "belt_state",
+            "registers",
+            "setpoints",
+            "anomaly",
+            "attack_run_id"
+          ],
+          "properties": {
+            "asset_id": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString" },
+            "process": { "type": "string", "minLength": 1 },
+            "captured_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/dateTime" },
+            "sample_index": { "type": "integer", "minimum": 0 },
+            "belt_state": {
+              "type": "string",
+              "enum": ["running", "stopped", "fault", "unknown"]
+            },
+            "registers": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/modbusRegister" }
+            },
+            "setpoints": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/setpoint" }
+            },
+            "anomaly": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "string",
+                  "enum": [
+                    "out_of_bounds",
+                    "unexpected_write",
+                    "frequency_spike",
+                    "value_frozen",
+                    "other"
+                  ]
+                }
+              ]
+            },
+            "attack_run_id": {
+              "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString",
+              "description": "Attack run that produced this sample, when the sample belongs to an offensive scenario."
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "conduit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["to_zone_id", "protocols", "description"],
+      "properties": {
+        "to_zone_id": { "type": "string", "minLength": 1 },
+        "protocols": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "securityZone": {
+      "allOf": [
+        { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/record" },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "purdue_level",
+            "iec62443_zone",
+            "target_security_level",
+            "asset_ids",
+            "conduits",
+            "description"
+          ],
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "purdue_level": {
+              "type": "string",
+              "enum": ["0", "1", "2", "3", "3.5", "4", "5", "unknown"],
+              "description": "Purdue Enterprise Reference Architecture level. '3.5' is the industrial DMZ."
+            },
+            "iec62443_zone": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/nullableString" },
+            "target_security_level": {
+              "type": "string",
+              "enum": ["SL-0", "SL-1", "SL-2", "SL-3", "SL-4", "unknown"]
+            },
+            "asset_ids": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "conduits": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/conduit" }
+            },
+            "description": { "type": "string" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "complianceMapping": {
+      "allOf": [
+        { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/record" },
+        {
+          "type": "object",
+          "required": [
+            "framework",
+            "reference_id",
+            "title",
+            "status",
+            "asset_ids",
+            "zone_ids",
+            "evidence_refs",
+            "notes"
+          ],
+          "properties": {
+            "framework": {
+              "type": "string",
+              "enum": ["iec_62443", "nis2", "mitre_attack_ics", "purdue"]
+            },
+            "reference_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Control/zone/technique identifier within the framework (e.g. 'SR 1.1', 'Art.21.2.d', 'T0836', 'Level 1')."
+            },
+            "title": { "type": "string", "minLength": 1 },
+            "status": {
+              "type": "string",
+              "enum": ["covered", "partial", "not_covered", "not_applicable", "planned"]
+            },
+            "asset_ids": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "zone_ids": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Ids of events, findings, attack_runs, or detection_correlations that justify the status."
+            },
+            "notes": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "historyMetrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["number", "integer", "null"]
+      },
+      "description": "Named scalar KPIs for a single point in time. Metrics are never combined across incompatible scales."
+    },
+    "historyPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshot_id", "generated_at", "metrics"],
+      "properties": {
+        "snapshot_id": { "type": "string", "minLength": 1 },
+        "generated_at": { "$ref": "dtlab-snapshot-v2.schema.json#/$defs/dateTime" },
+        "metrics": { "$ref": "#/$defs/historyMetrics" }
+      }
+    },
+    "retentionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_points", "max_age_days", "resolution"],
+      "properties": {
+        "max_points": { "type": "integer", "minimum": 1 },
+        "max_age_days": { "type": "integer", "minimum": 1 },
+        "resolution": {
+          "type": "string",
+          "enum": ["raw", "hourly", "daily"]
+        }
+      }
+    },
+    "history": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retention", "points"],
+      "properties": {
+        "retention": { "$ref": "#/$defs/retentionPolicy" },
+        "points": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/historyPoint" }
+        }
+      }
+    }
+  }
+}

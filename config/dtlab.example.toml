@@ -1,0 +1,38 @@
+[vpn]
+connection_name = "YOUR_VPN_CONNECTION"
+
+[esxi]
+host = "esxi.example.invalid"
+port = 443
+username = "READ_ONLY_ESXI_USER"
+tls_sha256 = "REPLACE_WITH_64_HEX_SHA256"
+
+[cybervision]
+base_url = "https://cybervision.example.invalid"
+tls_sha256 = "REPLACE_WITH_64_HEX_SHA256"
+page_size = 200
+max_pages = 500
+
+[storage]
+local_store = "../runtime/store"
+raw_directory = "../runtime/raw"
+
+[publish.production]
+enabled = false
+ssh_alias = "web75-publisher"
+remote_account = "dtlab-publish"
+remote_store = "/var/www/clients/client1/web75/private/modbus-dashboard-data"
+remote_owner = "dtlab-publish"
+remote_group = "dtlab-dashboard"
+manage_ownership = false
+remote_retention = 240
+
+[publish.staging]
+enabled = false
+ssh_alias = "web75-publisher"
+remote_account = "dtlab-publish"
+remote_store = "/var/www/clients/client1/web75/private/modbus-dashboard-data-staging"
+remote_owner = "dtlab-publish"
+remote_group = "dtlab-dashboard"
+manage_ownership = false
+remote_retention = 240

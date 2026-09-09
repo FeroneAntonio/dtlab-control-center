@@ -1,0 +1,38 @@
+{
+  "sensor_id": "plc-endpoint-sensor",
+  "sensor_version": "1.0.0",
+  "destination_asset_id": "asset:cybervision:dtlab-01:f8ea1750-43e9-4f1f-b1ce-5fc72cb31323",
+  "destination_ip": "172.16.10.10",
+  "local_ips": [
+    "127.0.0.1",
+    "172.16.10.10"
+  ],
+  "authorized_hmi_ips": [
+    "172.16.10.20"
+  ],
+  "security_test_ips": [
+    "172.16.10.30"
+  ],
+  "hmac_key_id": "plc-desktop-v1",
+  "hmac_key_file": "/etc/dtlab/plc-endpoint-audit.key",
+  "spool_path": "/var/lib/dtlab-plc-audit/events.jsonl",
+  "state_path": "/var/lib/dtlab-plc-audit/state.json",
+  "health_path": "/var/lib/dtlab-plc-audit/health.json",
+  "sender_health_path": "/var/lib/dtlab-plc-audit/sender-health.json",
+  "sender_cursor_path": "/var/lib/dtlab-plc-audit/sender-cursor.json",
+  "endpoint_url": "https://modbus.sitoclone.it/api/host-ot/v1/events",
+  "outbox_directory": null,
+  "ca_file": null,
+  "emit_interval_seconds": 30,
+  "quiet_window_seconds": 15,
+  "shutdown_window_seconds": 2,
+  "heartbeat_interval_seconds": 30,
+  "hook_health_interval_seconds": 5,
+  "sensor_health_max_age_seconds": 15,
+  "sender_poll_seconds": 5,
+  "http_timeout_seconds": 10,
+  "batch_limit": 100,
+  "max_values_per_write": 32,
+  "max_operation_buckets": 64,
+  "max_spool_bytes": 52428800
+}

@@ -1,0 +1,18 @@
+# Ruff config scoped to the API subtree. FastAPI's dependency-injection idiom
+# uses callables (Depends/Query/…) in argument defaults, which is safe here, so
+# B008 is silenced for exactly those calls.
+target-version = "py312"
+line-length = 100
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[lint.flake8-bugbear]
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Query",
+    "fastapi.Path",
+    "fastapi.Body",
+    "fastapi.Header",
+    "dtlab_api.security.require_role",
+]

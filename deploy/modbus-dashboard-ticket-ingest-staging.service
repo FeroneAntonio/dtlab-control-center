@@ -1,0 +1,31 @@
+[Unit]
+Description=DTLab staging snapshot ticket ingest
+After=network-online.target
+ConditionPathIsDirectory=/var/www/clients/client1/web75/private/modbus-dashboard-data-staging/manifests
+
+[Service]
+Type=oneshot
+User=web75
+Group=dtlab-dashboard
+WorkingDirectory=/var/www/clients/client1/web75/private/modbus-dashboard-staging-current
+Environment=PYTHONPATH=/var/www/clients/client1/web75/private/modbus-dashboard-staging-current/src
+Environment=DTLAB_SNAPSHOT_STORE=/var/www/clients/client1/web75/private/modbus-dashboard-data-staging
+Environment=DTLAB_TICKET_STORE=/var/www/clients/client1/web75/private/modbus-dashboard-ticket-data-staging/tickets.sqlite3
+ExecStart=/var/www/clients/client1/web75/private/modbus-dashboard-staging-venv-current/bin/python -m dtlab.services.ticket_ingest_worker
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX
+ReadOnlyPaths=/var/www/clients/client1/web75/private/modbus-dashboard-releases
+ReadOnlyPaths=/var/www/clients/client1/web75/private/modbus-dashboard-venvs
+ReadOnlyPaths=/var/www/clients/client1/web75/private/modbus-dashboard-data-staging
+ReadWritePaths=/var/www/clients/client1/web75/private/modbus-dashboard-ticket-data-staging
+InaccessiblePaths=/var/www/clients/client1/web75/private/modbus-dashboard

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="64" viewBox="0 0 300 64" role="img" aria-labelledby="title desc">
+  <title id="title">DTLab Control Center</title>
+  <desc id="desc">Portale OT Cisco Cyber Vision</desc>
+  <rect x="2" y="6" width="48" height="48" rx="15" fill="#006b5f"/>
+  <path d="M15 20h10c9 0 14 4 14 12s-5 12-14 12H15V20zm9 17h2c4 0 6-2 6-5s-2-5-6-5h-2v10z" fill="#fff"/>
+  <text x="63" y="29" fill="#17201e" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700">DTLab Control Center</text>
+  <text x="63" y="47" fill="#4b635d" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="500">OT visibility · Cisco Cyber Vision</text>
+</svg>

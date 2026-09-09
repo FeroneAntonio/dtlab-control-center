@@ -1,0 +1,8 @@
+streamlit>=1.59,<2
+pandas>=2.3,<3
+plotly>=6.0,<7
+jsonschema>=4.23,<5
+requests>=2.32,<3
+pyvmomi>=9.0,<10
+keyring>=25.6,<26
+

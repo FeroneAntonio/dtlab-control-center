@@ -1,0 +1,40 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.venv/
+venv/
+.env
+*.log
+.env.*
+!.env.example
+
+# JavaScript dependencies and generated frontend output.
+**/node_modules/
+**/.next/
+**/out/
+**/coverage/
+
+# Runtime snapshots: may contain private infrastructure data.
+data/current/*.json
+data/last_known_good/*.json
+data/raw/
+data/history/
+legacy/data/*.json
+
+# Collector secrets and local credential material must never enter source control.
+secrets/
+*.token
+*.pem
+*.key
+config/*.local.toml
+runtime/
+
+# Build artefacts (rigenerabili con tools/build_release.py)
+dist/
+tmp/
+output/
+backups/
+
+# Editable install metadata
+*.egg-info/

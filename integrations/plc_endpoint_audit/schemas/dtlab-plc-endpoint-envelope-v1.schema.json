@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://modbus.sitoclone.it/schemas/dtlab-plc-endpoint-envelope-v1.schema.json",
+  "title": "DTLab signed PLC endpoint spool envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "event",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "dtlab-plc-endpoint-envelope-v1"
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event": {
+      "$ref": "dtlab-host-ot-event-v1.schema.json"
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "key_id",
+        "payload_sha256",
+        "previous_record_sha256",
+        "record_sha256",
+        "signature"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "HMAC-SHA256"
+        },
+        "key_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "previous_record_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "record_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

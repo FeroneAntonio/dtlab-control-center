@@ -1,0 +1,41 @@
+[Unit]
+Description=DTLab authenticated PLC host-event ingress
+After=network-online.target modbus-dashboard-v2.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=web75
+Group=dtlab-dashboard
+WorkingDirectory=/var/www/clients/client1/web75/private/modbus-dashboard-current
+Environment=PYTHONPATH=/var/www/clients/client1/web75/private/modbus-dashboard-current/src
+Environment=DTLAB_TICKET_STORE=/var/www/clients/client1/web75/private/modbus-dashboard-ticket-data/tickets.sqlite3
+Environment=DTLAB_HOST_OT_EVENT_STORE=/var/www/clients/client1/web75/private/modbus-dashboard-host-ot-data
+Environment=DTLAB_HOST_OT_KEY_FILE=/var/www/clients/client1/web75/private/modbus-dashboard-host-ot-secrets/keyring.json
+Environment=DTLAB_HOST_OT_BIND=127.0.0.1
+Environment=DTLAB_HOST_OT_PORT=8520
+ExecStart=/var/www/clients/client1/web75/private/modbus-dashboard-venv-current/bin/python -m dtlab.services.host_ot_ingress
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadOnlyPaths=/var/www/clients/client1/web75/private/modbus-dashboard-releases
+ReadOnlyPaths=/var/www/clients/client1/web75/private/modbus-dashboard-venvs
+ReadOnlyPaths=/var/www/clients/client1/web75/private/modbus-dashboard-host-ot-secrets
+ReadWritePaths=/var/www/clients/client1/web75/private/modbus-dashboard-ticket-data
+ReadWritePaths=/var/www/clients/client1/web75/private/modbus-dashboard-host-ot-data
+InaccessiblePaths=/var/www/clients/client1/web75/private/modbus-dashboard
+
+[Install]
+WantedBy=multi-user.target

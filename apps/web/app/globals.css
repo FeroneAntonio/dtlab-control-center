@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* DTLab — clean, modern, light design system (SaaS style). */
+@theme {
+  --color-canvas: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfcfd;
+  --color-border: #e6e8ec;
+  --color-border-strong: #d5d9e0;
+  --color-ink: #0b1220;
+  --color-ink-2: #334155;
+  --color-muted: #64748b;
+  --color-faint: #94a3b8;
+
+  --color-brand: #4f46e5;
+  --color-brand-2: #6366f1;
+  --color-brand-soft: #eef2ff;
+  --color-ok: #059669;
+  --color-ok-soft: #ecfdf5;
+  --color-warn: #d97706;
+  --color-warn-soft: #fffbeb;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fef2f2;
+  --color-info: #0891b2;
+
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow-pop: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d5d9e0;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c2c8d1;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.35); }
+  70% { box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+}
+.live-dot {
+  animation: pulse-ring 2s infinite;
+}
