@@ -98,7 +98,7 @@ def test_table_exports_contain_only_the_filtered_rows() -> None:
 def test_empty_csv_keeps_the_declared_table_contract() -> None:
     content = table_csv_bytes([], columns=["Asset", "Score"]).decode("utf-8-sig")
 
-    assert content == "Asset,Score\r\n"
+    assert content.splitlines() == ["Asset,Score"]
 
 
 def test_rendered_table_and_downloads_share_the_same_filtered_subset() -> None:

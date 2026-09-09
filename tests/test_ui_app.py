@@ -2,15 +2,17 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import UTC, datetime
+from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
 from dtlab.services.snapshot_store import AtomicSnapshotStore
-from dtlab.ui.context import DashboardContext, load_dashboard_context
+from dtlab.ui.context import load_dashboard_context
 from dtlab.ui.views.security import _event_rows
 from tests.factories import add_cisco_asset, valid_snapshot
 
 PUBLISHED_AT = datetime(2026, 8, 3, 14, 30, tzinfo=UTC)
+APP_PATH = Path(__file__).resolve().parents[1] / "app.py"
 
 
 def _publish(root, snapshot: dict) -> None:
@@ -21,7 +23,7 @@ def _source_by_type(snapshot: dict, source_type: str) -> dict:
     return next(source for source in snapshot["sources"] if source["type"] == source_type)
 
 
-def _render_vulnerabilities_for_test(context: DashboardContext) -> None:
+def _render_vulnerabilities_for_test(context) -> None:
     from dtlab.ui.views.security import render_vulnerabilities
 
     render_vulnerabilities(context)
@@ -30,7 +32,7 @@ def _render_vulnerabilities_for_test(context: DashboardContext) -> None:
 def test_app_fails_closed_when_no_trusted_snapshot_exists(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("DTLAB_SNAPSHOT_STORE", str(tmp_path / "missing"))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
 
     assert len(app.exception) == 0
     assert any("fail-closed" in error.value for error in app.error)
@@ -41,7 +43,7 @@ def test_partial_dashboard_has_no_demo_or_fake_score(tmp_path, monkeypatch) -> N
     _publish(store, valid_snapshot())
     monkeypatch.setenv("DTLAB_SNAPSHOT_STORE", str(store))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
     rendered = "\n".join(str(element.value) for element in [*app.markdown, *app.info, *app.warning])
 
     assert len(app.exception) == 0
@@ -68,7 +70,7 @@ def test_real_cisco_score_is_rendered_with_per_device_label(
     _publish(store, snapshot)
     monkeypatch.setenv("DTLAB_SNAPSHOT_STORE", str(store))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
     rendered = "\n".join(str(element.value) for element in app.markdown)
 
     assert len(app.exception) == 0
@@ -97,7 +99,7 @@ def test_command_center_exposes_classic_and_new_ui_as_separate_sources(
     _publish(store, snapshot)
     monkeypatch.setenv("DTLAB_SNAPSHOT_STORE", str(store))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
     rendered = "\n".join(str(element.value) for element in app.markdown)
 
     assert len(app.exception) == 0
@@ -122,7 +124,7 @@ def test_command_center_shows_degraded_cisco_as_available_data(
     _publish(store, snapshot)
     monkeypatch.setenv("DTLAB_SNAPSHOT_STORE", str(store))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
     rendered = "\n".join(str(element.value) for element in app.markdown)
 
     assert len(app.exception) == 0
@@ -141,7 +143,7 @@ def test_corrupt_current_uses_verified_fallback_and_labels_it(tmp_path, monkeypa
     (store.objects / manifest["object_name"]).write_text("{}", encoding="utf-8")
     monkeypatch.setenv("DTLAB_SNAPSHOT_STORE", str(store_path))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
 
     assert len(app.exception) == 0
     assert any("last_known_good" in warning.value for warning in app.warning)
@@ -154,7 +156,7 @@ def test_dynamic_html_is_escaped_before_rendering(tmp_path, monkeypatch) -> None
     _publish(store, snapshot)
     monkeypatch.setenv("DTLAB_SNAPSHOT_STORE", str(store))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
     rendered = "\n".join(str(element.value) for element in app.markdown)
 
     assert len(app.exception) == 0

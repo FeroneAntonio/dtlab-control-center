@@ -94,7 +94,7 @@ def _baseline_difference(
     }
 
 
-def _render_events_for_test(context: DashboardContext) -> None:
+def _render_events_for_test(context) -> None:
     from dtlab.ui.views.security import render_events
 
     render_events(context)

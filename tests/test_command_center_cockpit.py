@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
+from pathlib import Path
 from unittest.mock import patch
 
 from streamlit.testing.v1 import AppTest
@@ -13,6 +14,7 @@ from dtlab.ui.views.monitoring import _priority_signals, host_ot_topology_rows
 from tests.factories import FETCHED_AT, evidence, valid_snapshot
 
 PUBLISHED_AT = datetime(2026, 8, 3, 14, 30, tzinfo=UTC)
+APP_PATH = Path(__file__).resolve().parents[1] / "app.py"
 
 
 def test_priority_signals_preserve_all_real_operational_sources() -> None:
@@ -145,7 +147,7 @@ def test_command_center_renders_recommendation_and_infrastructure(
     )
     monkeypatch.setenv("DTLAB_HOST_OT_EVENT_STORE", str(host_store))
 
-    app = AppTest.from_file("app.py").run(timeout=20)
+    app = AppTest.from_file(APP_PATH).run(timeout=20)
     rendered = "\n".join(str(element.value) for element in app.markdown)
     success_messages = "\n".join(str(element.value) for element in app.success)
 

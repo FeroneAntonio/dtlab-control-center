@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from streamlit.testing.v1 import AppTest
 
 from dtlab.services.snapshot_store import AtomicSnapshotStore
-from dtlab.ui.context import DashboardContext, load_dashboard_context
+from dtlab.ui.context import load_dashboard_context
 from dtlab.ui.topology import (
     flow_topology,
     integrated_topology,
@@ -17,7 +17,7 @@ from dtlab.ui.topology import (
 from tests.factories import FETCHED_AT, add_cisco_asset, evidence, valid_snapshot
 
 
-def _render_topology_for_test(context: DashboardContext) -> None:
+def _render_topology_for_test(context) -> None:
     from dtlab.ui.views.monitoring import render_topology
 
     render_topology(context)

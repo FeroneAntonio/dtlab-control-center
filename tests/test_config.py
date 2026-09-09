@@ -38,8 +38,11 @@ def _load_text(tmp_path: Path, publish_sections: str):
 
 
 def test_local_config_contains_no_credentials_and_resolves_private_paths() -> None:
-    config = load_config("config/dtlab.local.toml")
-    text = Path("config/dtlab.local.toml").read_text(encoding="utf-8").lower()
+    local_config = Path("config/dtlab.local.toml")
+    if not local_config.exists():
+        pytest.skip("private local deployment config is intentionally not versioned")
+    config = load_config(local_config)
+    text = local_config.read_text(encoding="utf-8").lower()
 
     assert "password" not in text
     assert "api_token" not in text
