@@ -4,7 +4,7 @@ Il bundle in `lab/beerfactory-company/` è materiale di laboratorio fornito
 dall'azienda per il progetto DTLab e già distribuito sulle VM autorizzate. La copia
 versionata proviene dal repository di manutenzione del team
 `silvatos/ot-security-lab`, commit
-`d1518c3a5ef0e1a7a32b82bb9681cfed8a1b6bf7`.
+`d1518f25ea538f76804854dafa2272a3640cc775`.
 
 Il riferimento al repository documenta la provenienza tecnica della copia e non
 attribuisce automaticamente la paternità dei file a una singola persona.

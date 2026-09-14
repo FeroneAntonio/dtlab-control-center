@@ -5,7 +5,7 @@ all'interno del progetto aziendale e già installato sulle VM autorizzate del
 laboratorio. La copia è stata importata dal repository di manutenzione del team:
 
 - origine: `https://github.com/silvatos/ot-security-lab`;
-- commit acquisito: `d1518c3a5ef0e1a7a32b82bb9681cfed8a1b6bf7`;
+- commit acquisito: `d1518f25ea538f76804854dafa2272a3640cc775`;
 - directory immutata: `beerfactory-company/`.
 
 Il nome dell'account che ospita il repository di manutenzione non costituisce una
