@@ -161,6 +161,24 @@ Percorsi configurabili:
 - `DTLAB_TICKET_STORE`: database SQLite dei ticket;
 - `DTLAB_DEFAULT_OPERATOR`: operatore proposto dalla UI.
 
+### Retention del ticket store
+
+`scripts/prune_ticket_store.py` mostra soltanto il piano per default. Conserva 50 ticket
+secondo lo stesso ordine della UI (`updated_at DESC, id`); l'ultimo ticket
+`host_modbus_write` classificato `security_test` sostituisce, se necessario, il più vecchio
+dei 50. Con `--retain 0` la protezione prevale e conserva quel solo ticket, se presente.
+
+```bash
+python3 scripts/prune_ticket_store.py --database /percorso/tickets.sqlite3
+python3 scripts/prune_ticket_store.py --database /percorso/tickets.sqlite3 --apply
+```
+
+`--apply` crea prima un backup coerente tramite l'API SQLite e un manifest JSON con
+SHA-256, poi elimina in una sola transazione ticket e dipendenze non conservati e i segnali
+orfani. Il ledger `snapshot_ingests` resta intatto per impedire il reingest. Su un database
+attivo è consigliabile fermare e riavviare esternamente dashboard, receiver Host OT e worker
+di ingest; lo script non gestisce servizi né credenziali.
+
 Per la raccolta reale copiare `config/dtlab.example.toml` in un file locale ignorato
 da Git, impostare host e fingerprint TLS e registrare credenziali read-only nel
 credential store del sistema operativo. Nessuna password viene accettata nel file di
