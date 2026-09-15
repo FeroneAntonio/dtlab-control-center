@@ -108,14 +108,14 @@ def _require_schema(connection: sqlite3.Connection) -> str:
     tables = {
         str(row[0])
         for row in connection.execute(
-            "SELECT name FROM sqlite_schema WHERE type = 'table'"
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
         )
     }
     missing = sorted(REQUIRED_TABLES - tables)
     if missing:
         raise PruneError(f"not a compatible DTLab ticket store; missing: {', '.join(missing)}")
     row = connection.execute(
-        "SELECT sql FROM sqlite_schema WHERE type = 'trigger' AND name = ?",
+        "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
         (AUDIT_DELETE_TRIGGER,),
     ).fetchone()
     if row is None or not str(row[0] or "").strip():
