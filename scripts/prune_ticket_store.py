@@ -15,7 +15,7 @@ import stat
 import sys
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -285,7 +285,7 @@ def create_backup(database: Path, backup_dir: Path | None = None) -> dict[str, A
     destination = destination.resolve(strict=True)
     if os.name != "nt":
         destination.chmod(0o700)
-    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     backup = destination / f"{database.stem}-{timestamp}-{uuid.uuid4().hex[:8]}.pre-prune.sqlite3"
     temporary = destination / f".{backup.name}.{uuid.uuid4().hex}.tmp"
     source: sqlite3.Connection | None = None
@@ -316,7 +316,7 @@ def create_backup(database: Path, backup_dir: Path | None = None) -> dict[str, A
 
     manifest = {
         "schema_version": "dtlab-ticket-store-prune-backup-v1",
-        "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "source_database": str(database),
         "backup_file": backup.name,
         "backup_size_bytes": backup.stat().st_size,
